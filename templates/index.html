@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Prediction</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #3498db, #2c3e50);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        main {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #333;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            width: 80%; /* Adjust the width as needed */
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+        p {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        p.error {
+            color: red;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .loading img {
+            width: 30px;
+            height: 30px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .data-container {
+            display: flex;
+            justify-content: space-between;
+            width: 80%; /* Adjust the width as needed */
+        }
+
+        .left-container {
+            flex: 1;
+        }
+
+        .right-container {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Stock Prediction</h1>
+        <form action="/submit" method="post" onsubmit="showLoading()">
+            <label for="stock_name">Enter Stock Name:</label>
+            <input type="text" id="stock_name" name="stock_name" required>
+            <br>
+            <input type="submit" value="Predict">
+        </form>
+
+        <div class="loading" id="loading">
+            <img src="{{ url_for('static', filename='loading.gif') }}" alt="Loading Spinner">
+            <p>Loading...</p>
+        </div>
+
+        {% if stock_name %}
+        <p><b>{{ stock_name }}</b></p>
+        {% endif %}
+
+        {% if error_message %}
+        <p class="error">{{ error_message }}</p>
+        {% endif %}
+
+        {% if result %}
+        <h2>Prediction Result:</h2>
+        <p>{{ result }}</p>
+        {% endif %}
+
+    </main>
+
+    <div class="data-container">
+        <div class="left-container">
+            {% if past_data|length > 0 %}
+            <h2>Past 15 Days Data</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Open</th>
+                        <th>High</th>
+                        <th>Low</th>
+                        <th>Close</th>
+                        <th>Volume</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in past_data.values %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[4] }}</td>
+                        <td>{{ row[5] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% endif %}
+        </div>
+
+        <div class="right-container">
+            {% if flag_chart_html %}
+            <h2>Flag Chart:</h2>
+            {{ flag_chart_html | safe }}
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
