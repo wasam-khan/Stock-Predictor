@@ -69,6 +69,7 @@ def preprocess_data(data_scaled, scaler, time_steps):
             X.append(data_scaled[i:i+time_steps, :5])
             y.append(data_scaled[i+time_steps, 3])  # 'Close' column is at index 3
 
+        print(X)
         return np.array(X), np.array(y)
 
     except Exception as e:
@@ -93,30 +94,26 @@ def make_predictions_future(model, latest_data, scaler, time_steps):
 
         # Use the latest available data to make predictions for the future date
         latest_data_df = pd.DataFrame(latest_data, columns=['Date','Open', 'High', 'Low', 'Close', 'Volume'])
-
+        print(len(latest_data_df))
         latest_date = latest_data_df['Date'].max().date()
         future_date = latest_date + timedelta(days=1)
-        while latest_date < future_date:
-            input_sequence = latest_data_df[['Open', 'High', 'Low', 'Close', 'Volume']].values[-time_steps:]
-            input_sequence_scaled = input_sequence.reshape(1, time_steps, 5)
+        
+        input_sequence = latest_data_df[['Open', 'High', 'Low', 'Close', 'Volume']].values[-time_steps:]
+        input_sequence_scaled = input_sequence.reshape(1, time_steps, 5)
 
-            # Make predictions
-            predicted_scaled = model.predict(input_sequence_scaled)
+        # Make predictions
+        predicted_scaled = model.predict(input_sequence_scaled)
 
-            # Inverse transform the predicted value to get the actual stock price
-            predicted_price_scaled = np.array([[predicted_scaled[0, 0], 0, 0, 0, 0]])  # Add zeros for other columns
-            predicted_price = scaler.inverse_transform(predicted_price_scaled)
+        # Inverse transform the predicted value to get the actual stock price
+        predicted_price_scaled = np.array([[predicted_scaled[0, 0], 0, 0, 0, 0]])  # Add zeros for other columns
+        predicted_price = scaler.inverse_transform(predicted_price_scaled)
 
-            # Create a new DataFrame with the predicted values
-            predicted_df = pd.DataFrame({'Date': [future_date], 'Close': [predicted_price[0][0]]})
+        # Create a new DataFrame with the predicted values
+        predicted_df = pd.DataFrame({'Date': [future_date], 'Close': [predicted_price[0][0]]})
 
-            # Concatenate the new DataFrame with the existing DataFrame
-            latest_data_df = pd.concat([latest_data_df, predicted_df], ignore_index=True)
-      
-
-            latest_date = latest_date + timedelta(days=1)
-
-
+        # Concatenate the new DataFrame with the existing DataFrame
+        latest_data_df = pd.concat([latest_data_df, predicted_df], ignore_index=True)
+    
 
         return latest_data_df, future_date
     
@@ -211,8 +208,12 @@ def submit():
             print(f"Error creating flag chart: {e}")
         # Check if 'Close' column exists
         if 'Close' in future_predictions.columns:
+            
+            rounded = future_predictions.tail(1)['Close'].values[0]
 
-            result = f"Predicted Close Price for {tomorrow_date}: {future_predictions.tail(1)['Close'].values[0]}"
+            rounded = round(rounded,2)
+
+            result = f"Predicted Close Price for {tomorrow_date}: {rounded}"
             past_15_data = data_with_dates.tail(15)
 
         else:

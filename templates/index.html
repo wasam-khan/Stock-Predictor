@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Prediction</title>
 
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -15,12 +18,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         main {
             background-color: #fff;
-            padding: 40px;
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -28,6 +30,7 @@
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
             width: 80%; /* Adjust the width as needed */
             margin-bottom: 20px;
+            padding: 20px;
         }
 
         h1 {
@@ -45,7 +48,7 @@
         }
 
         input[type="text"] {
-            width: calc(100% - 20px);
+            width: 100%;
             padding: 10px;
             margin-bottom: 20px;
             box-sizing: border-box;
@@ -88,34 +91,26 @@
             height: 30px;
         }
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
         .data-container {
             display: flex;
             justify-content: space-between;
             width: 80%; /* Adjust the width as needed */
         }
 
-        .left-container {
+        .card {
             flex: 1;
+            margin-right: 10px;
+            margin-left: 10px;
         }
 
-        .right-container {
-            flex: 1;
+        .scrollable-card {
+            max-height: 500px; /* Adjust the max height as needed */
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -150,10 +145,10 @@
     </main>
 
     <div class="data-container">
-        <div class="left-container">
+        <div class="card scrollable-card">
             {% if past_data|length > 0 %}
             <h2>Past 15 Days Data</h2>
-            <table>
+            <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -177,11 +172,10 @@
                     {% endfor %}
                 </tbody>
             </table>
-
             {% endif %}
         </div>
 
-        <div class="right-container">
+        <div class="card">
             {% if flag_chart_html %}
             <h2>Flag Chart:</h2>
             {{ flag_chart_html | safe }}
@@ -189,10 +183,12 @@
         </div>
     </div>
 
-    <script>
-        function showLoading() {
-            document.getElementById('loading').style.display = 'block';
-        }
-    </script>
+    <!-- Add Bootstrap JS and Popper.js scripts -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script >function showLoading() {
+        document.getElementById('loading').style.display = 'block';
+    }</script>
 </body>
 </html>
